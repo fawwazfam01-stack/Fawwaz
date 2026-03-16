@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Calculator, 
   Dice5, 
@@ -154,7 +155,15 @@ const InputField = ({ label, value, onChange, icon: Icon, min, max, description,
 };
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'basic' | 'dice' | 'coins' | 'combinatorics'>('basic');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
   
   // Basic Probability State
   const [nA, setNA] = useState<number>(1);
@@ -248,6 +257,39 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-zinc-900 font-sans selection:bg-emerald-100">
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-zinc-950 text-white"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center gap-6"
+            >
+              <div className="relative">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="w-24 h-24 border-t-2 border-emerald-500 rounded-full"
+                />
+                <Calculator className="w-10 h-10 text-emerald-500 absolute inset-0 m-auto" />
+              </div>
+              <div className="text-center space-y-2">
+                <h1 className="text-2xl font-black tracking-tighter uppercase">ProbLogic</h1>
+                <p className="text-zinc-500 text-[10px] font-bold tracking-[0.2em] uppercase">
+                  Created By: Fawwaz Azzam M.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-bottom border-zinc-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
